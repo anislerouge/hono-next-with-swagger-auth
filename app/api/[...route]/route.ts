@@ -75,4 +75,55 @@ app.openapi(
   }
 );
 
+app.openapi(
+  {
+    path: "/hello",
+    method: "post", 
+    summary: "Hello POST endpoint",
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+    description: "Send a message and get a response",
+    requestBody: {
+      description: "Message to send",
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            required: ["message"],
+            properties: {
+              message: {
+                type: "string",
+                description: "The message to send"
+              }
+            }
+          }
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Returns the message",
+        content: {
+          "application/json": {
+            schema: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+    },
+  },
+  async (c) => {
+    const body = await c.req.json();
+    return c.json({
+      message: `Hello! You sent: ${body.message}`,
+    });
+  }
+);
+
 export const GET = handle(app);
+export const POST = handle(app);
